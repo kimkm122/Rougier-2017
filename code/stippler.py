@@ -42,8 +42,9 @@
 import tqdm
 import voronoi
 import os.path
-import scipy.misc
-import scipy.ndimage
+#import scipy.misc
+#import scipy.ndimage
+import cv2
 import numpy as np
 
 def normalize(D):
@@ -135,12 +136,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     filename = args.filename
-    density = scipy.misc.imread(filename, flatten=True, mode='L')
-
+    #density = scipy.misc.imread(filename, flatten=True, mode='L')
+    density = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+    
     # We want (approximately) 500 pixels per voronoi region
     zoom = (args.n_point * 500) / (density.shape[0]*density.shape[1])
     zoom = int(round(np.sqrt(zoom)))
-    density = scipy.ndimage.zoom(density, zoom, order=0)
+    #density = scipy.ndimage.zoom(density, zoom, order=0)
+    density = cv2.resize(density, None, fx=zoom, fy=zoom, interpolation = cv.INTER_CUBIC)
     # Apply threshold onto image
     # Any color > threshold will be white
     density = np.minimum(density, args.threshold)
